@@ -33,18 +33,15 @@ let analyser = null;
 let sourceNode = null;
 let animationFrameId = null;
 
-const trackModules = import.meta.glob('../assets/music/*.mp3', {
-  eager: true,
-  import: 'default',
-});
-
-const tracks = Object.entries(trackModules)
-  .map(([path, src]) => {
-    const rawName = path.split('/').pop() ?? 'track.mp3';
-    const name = rawName.replace(/\.mp3$/i, '').replace(/[-_]/g, ' ');
-    return { name, src };
-  })
-  .sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+const tracks = [
+  { name: 'Buông Bỏ Sự Phụ Thuộc', src: '/music/[Vietsub + Pinyin] Buông Bỏ Sự Phụ Thuộc Nơi Anh - Vương Diễm Vi - 离开我的依赖 - 王艳薇 Evangeline.mp3' },
+  { name: 'Giày cao gót màu đỏ', src: '/music/Giày cao gót màu đỏ 红色高跟鞋 - Học tiếng Trung qua bài hát - Vietsub - Phiên âm - Từ mới.mp3' },
+  { name: 'Jumping Machine', src: '/music/Jumping Machine (跳楼机) (1.1x).mp3' },
+  { name: 'Justin Bieber Baby', src: '/music/Justin Bieber - Baby ft. Ludacris.mp3' },
+  { name: 'Like Sunny Days', src: '/music/Like Sunny Days, Like Rainy Days 像晴天像雨天 (電視劇難哄The First Frost心動曲) - 汪蘇瀧Silence.W.mp3' },
+  { name: 'Tri Ngã Hiểu Ta', src: '/music/[Vietsub + Pinyin] Tri Ngã (Hiểu Ta) - Nga Lâu __ 知我 - 哦漏 (OST Kiếm Lai).mp3' },
+  { name: 'Vietsub Đông Miên', src: '/music/[Vietsub] Đông Miên - 2023 - A Nguyệt Nguyệt, Lưu Triệu Vũ - 冬眠 - 2023 - 阿YueYue, 刘兆宇.mp3' },
+].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
 
 const hasTracks = computed(() => tracks.length > 0);
 const currentTrack = computed(() => tracks[currentIndex.value] ?? null);

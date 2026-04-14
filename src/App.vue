@@ -7,6 +7,7 @@ import InfoBand from './components/InfoBand.vue';
 import FeatureGrid from './components/FeatureGrid.vue';
 import ContactPanel from './components/ContactPanel.vue';
 import MusicControl from './components/MusicControl.vue';
+import VnuaSchoolPanel from './components/VnuaSchoolPanel.vue';
 import CelebrationLayer from './components/CelebrationLayer.vue';
 import FooterBar from './components/FooterBar.vue';
 import { facts, featureCards, profile, skills } from './data/profile';
@@ -14,6 +15,7 @@ import { useArcadeGames } from './composables/useArcadeGames';
 
 const arcade = useArcadeGames();
 const modeName = computed(() => arcade.modeInfo.value?.name ?? 'Bắt Sao');
+const celebrationBursts = computed(() => arcade.celebrations.value);
 
 onMounted(() => {
   arcade.readStoredScores();
@@ -22,7 +24,7 @@ onMounted(() => {
 
 <template>
   <main class="page-shell">
-    <CelebrationLayer :bursts="arcade.celebrations" />
+    <CelebrationLayer :bursts="celebrationBursts" />
     <div class="ambient ambient-one"></div>
     <div class="ambient ambient-two"></div>
     <div class="ambient ambient-three"></div>
@@ -35,6 +37,8 @@ onMounted(() => {
         <span>Chào mừng bạn đến với trang thông tin và mini game của Vũ Xuân Lâm</span>
       </div>
     </section>
+
+    <VnuaSchoolPanel />
 
     <section class="hero-grid">
       <ProfilePanel :profile="profile" :facts="facts" :skills="skills">

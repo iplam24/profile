@@ -3,11 +3,25 @@ import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  server: {
+    proxy: {
+      '/vnua-api': {
+        target: 'https://daotao.vnua.edu.vn',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/vnua-api/, ''),
+      },
+    },
+  },
   plugins: [
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
       includeAssets: ['apple-touch-icon.png'],
       manifest: {
         name: 'Web Thong Tin Vu Xuan Lam',
@@ -38,21 +52,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,mp3}'],
         cleanupOutdatedCaches: true,
-        runtimeCaching: [
-          {
-            urlPattern: /\/assets\/.*\.mp3$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'music-cache',
-              expiration: {
-                maxEntries: 24,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
-              },
-            },
-          },
-        ],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
       },
     }),
   ],
