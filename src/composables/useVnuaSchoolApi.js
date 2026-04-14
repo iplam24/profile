@@ -1,5 +1,7 @@
+import axios from 'axios';
 import { computed, ref } from 'vue';
 
+const API_HOST = 'https://daotao.vnua.edu.vn';
 const BASE_URL = '/vnua-api';
 
 const ENDPOINTS = {
@@ -18,6 +20,16 @@ const STORAGE_KEYS = {
 
 const TOKEN_TTL_MS = 15 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 60 * 1000;
+
+const axiosClient = axios.create({
+  baseURL: BASE_URL,
+  timeout: REQUEST_TIMEOUT_MS,
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json, text/plain, */*',
+  },
+  validateStatus: () => true,
+});
 
 function toBase64(bytes) {
   return btoa(String.fromCharCode(...bytes));
@@ -69,10 +81,11 @@ export function useVnuaSchoolApi() {
   const terms = ref([]);
   const selectedTerm = ref('');
   const schedule = ref([]);
+  const scheduleMeta = ref({});
   const grades = ref([]);
   const exams = ref([]);
   const lastStatus = ref('');
-  const activeBaseUrl = ref(BASE_URL);
+  const activeBaseUrl = ref(API_HOST);
 
   const isLoggedIn = computed(() => Boolean(token.value));
 
@@ -145,29 +158,18 @@ export function useVnuaSchoolApi() {
     return Date.now() - tokenIssuedAt.value >= TOKEN_TTL_MS;
   }
 
-  async function postJson(path, body, accessToken) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  function isOk(response) {
+    return response?.status >= 200 && response?.status < 300;
+  }
 
-    const response = await fetch(`${BASE_URL}${path}`, {
-      method: 'POST',
+  async function postJson(path, body, accessToken) {
+    const response = await axiosClient.post(path, body, {
       headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json, text/plain, */*',
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },
-      body: JSON.stringify(body),
-      signal: controller.signal,
     });
-    clearTimeout(timer);
 
-    let payload = null;
-    try {
-      const text = await response.text();
-      payload = text ? JSON.parse(text) : null;
-    } catch {
-      payload = null;
-    }
+    const payload = response?.data ?? null;
 
     return { response, payload };
   }
@@ -181,18 +183,42 @@ export function useVnuaSchoolApi() {
 
     loading.value = true;
     try {
-      const primaryBody = {
-        username: username.value,
-        password: password.value,
-        grant_type: 'password',
-      };
+      let response;
+      let payload;
 
-      let { response, payload } = await postJson(ENDPOINTS.login, primaryBody);
+      // API login thường cần x-www-form-urlencoded như Postman.
+      const tryBodies = [
+        new URLSearchParams({
+          username: username.value,
+          password: password.value,
+          grant_type: 'password',
+        }),
+        new URLSearchParams({
+          userName: username.value,
+          password: password.value,
+          grant_type: 'password',
+        }),
+      ];
 
-      // Some deployments validate different key names for username.
-      if (!response.ok || !pickAccessToken(payload)) {
+      for (const body of tryBodies) {
+        const formResp = await axiosClient.post(ENDPOINTS.login, body, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+
+        response = formResp;
+        payload = formResp?.data ?? null;
+
+        if (isOk(response) && pickAccessToken(payload)) {
+          break;
+        }
+      }
+
+      // Fallback JSON nếu server instance chấp nhận JSON payload.
+      if (!isOk(response) || !pickAccessToken(payload)) {
         const fallbackBody = {
-          ma_sv: username.value,
+          username: username.value,
           password: password.value,
           grant_type: 'password',
         };
@@ -203,7 +229,7 @@ export function useVnuaSchoolApi() {
 
       const tokenValue = pickAccessToken(payload);
 
-      if (!response.ok || !tokenValue) {
+      if (!isOk(response) || !tokenValue) {
         const reason = pickApiMessage(payload);
         const suffix = reason ? ` (${reason})` : '';
         setError(`Đăng nhập thất bại. Kiểm tra lại tài khoản hoặc mật khẩu.${suffix}`);
@@ -215,7 +241,7 @@ export function useVnuaSchoolApi() {
       await saveCredentialsIfNeeded();
       return true;
     } catch (err) {
-      if (err?.name === 'AbortError') {
+      if (err?.code === 'ECONNABORTED') {
         setError('Hết thời gian chờ khi đăng nhập VNUA (60s). Vui lòng thử lại.');
         lastStatus.value = 'login:timeout';
         return false;
@@ -248,7 +274,7 @@ export function useVnuaSchoolApi() {
       return authenticatedPost(path, body, false);
     }
 
-    if (!response.ok) {
+    if (!isOk(response)) {
       throw new Error(`HTTP_${response.status}`);
     }
 
@@ -287,7 +313,15 @@ export function useVnuaSchoolApi() {
         loai_doi_tuong: 1,
         id_du_lieu: null,
       });
-      schedule.value = payload?.data?.ds_nhom_to ?? [];
+
+      const data = payload?.data ?? {};
+      scheduleMeta.value = {
+        totalItems: Number(data?.total_items ?? 0),
+        totalPages: Number(data?.total_pages ?? 0),
+        loaiHienThiTuan: payload?.loai_hien_thi_tuan ?? null,
+      };
+      schedule.value = Array.isArray(data?.ds_nhom_to) ? data.ds_nhom_to : [];
+      lastStatus.value = `schedule:ok:${schedule.value.length}`;
     } catch {
       setError('Không tải được lịch học.');
     } finally {
@@ -352,6 +386,7 @@ export function useVnuaSchoolApi() {
     terms,
     selectedTerm,
     schedule,
+    scheduleMeta,
     grades,
     exams,
     lastStatus,

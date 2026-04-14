@@ -1,12 +1,12 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, proxyRefs, ref } from 'vue';
 import { BookOpenCheck, CalendarDays, ChevronDown, ChevronUp, GraduationCap, LogIn, LogOut, ShieldCheck } from 'lucide-vue-next';
 import { useVnuaSchoolApi } from '../composables/useVnuaSchoolApi';
 
 const open = ref(true);
 const showLoginForm = ref(true);
 const detailView = ref('schedule');
-const api = useVnuaSchoolApi();
+const api = proxyRefs(useVnuaSchoolApi());
 
 function pickValue(source, keys, fallback = '-') {
   for (const key of keys) {
@@ -18,11 +18,11 @@ function pickValue(source, keys, fallback = '-') {
   return fallback;
 }
 
-const scheduleRows = computed(() => (Array.isArray(api.schedule.value) ? api.schedule.value : []));
-const examRows = computed(() => (Array.isArray(api.exams.value) ? api.exams.value : []));
+const scheduleRows = computed(() => (Array.isArray(api.schedule) ? api.schedule : []));
+const examRows = computed(() => (Array.isArray(api.exams) ? api.exams : []));
 const gradeRows = computed(() => {
-  if (!Array.isArray(api.grades.value)) return [];
-  return api.grades.value.flatMap((semester) => {
+  if (!Array.isArray(api.grades)) return [];
+  return api.grades.flatMap((semester) => {
     const semesterName = pickValue(semester, ['ten_hoc_ky', 'hoc_ky'], 'Không rõ học kỳ');
     const subjects = Array.isArray(semester?.ds_diem_mon_hoc) ? semester.ds_diem_mon_hoc : [];
     return subjects.map((subject) => ({
@@ -56,7 +56,7 @@ async function refreshAll() {
 
 onMounted(async () => {
   await api.loadCredentials();
-  showLoginForm.value = !api.isLoggedIn.value;
+  showLoginForm.value = !api.isLoggedIn;
 });
 </script>
 
@@ -142,7 +142,7 @@ onMounted(async () => {
       <div v-if="api.isLoggedIn" class="data-grid">
         <article class="mini-card">
           <h4>Lịch học</h4>
-          <p>{{ api.schedule.length }} nhóm môn</p>
+          <p>{{ api.scheduleMeta?.totalItems || api.schedule.length }} buổi</p>
         </article>
         <article class="mini-card">
           <h4>Bảng điểm</h4>
@@ -169,12 +169,19 @@ onMounted(async () => {
 
         <div class="detail-panel" v-if="detailView === 'schedule'">
           <p class="detail-empty" v-if="!scheduleRows.length">Chưa có dữ liệu TKB, bấm nút Lịch học để tải.</p>
+          <p class="detail-empty" v-else>
+            Tổng: {{ api.scheduleMeta?.totalItems || scheduleRows.length }} buổi,
+            trang: {{ api.scheduleMeta?.totalPages || 1 }}
+          </p>
           <article class="detail-card" v-for="(item, idx) in scheduleRows.slice(0, 40)" :key="`${pickValue(item, ['ma_mon', 'id_to_hocphan', 'id'], idx)}-${idx}`">
             <h5>{{ pickValue(item, ['ten_mon', 'ten_hoc_phan', 'ma_mon'], 'Môn học') }}</h5>
             <p>Mã môn: {{ pickValue(item, ['ma_mon']) }}</p>
-            <p>Giảng viên: {{ pickValue(item, ['ten_giang_vien', 'giang_vien']) }}</p>
-            <p>Lịch: {{ pickValue(item, ['tkb', 'thu']) }}</p>
-            <p>Phòng: {{ pickValue(item, ['phong_hoc', 'ma_phong']) }}</p>
+            <p>Nhóm/Lớp: {{ pickValue(item, ['nhom_to']) }} / {{ pickValue(item, ['lop', 'ten_lop']) }}</p>
+            <p>Thứ: {{ pickValue(item, ['thu']) }} | Tiết bắt đầu: {{ pickValue(item, ['tbd']) }} | Số tiết: {{ pickValue(item, ['so_tiet']) }}</p>
+            <p>Giờ học: {{ pickValue(item, ['tu_gio']) }} - {{ pickValue(item, ['den_gio']) }}</p>
+            <p>Phòng: {{ pickValue(item, ['phong', 'phong_hoc', 'ma_phong']) }}</p>
+            <p>Giảng viên: {{ pickValue(item, ['gv', 'ten_giang_vien', 'giang_vien']) }}</p>
+            <p>Tuần học: {{ pickValue(item, ['tooltip']) }}</p>
           </article>
         </div>
 
