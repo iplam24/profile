@@ -1,4 +1,6 @@
-<script setup>
+﻿<script setup>
+import { Facebook, Github } from 'lucide-vue-next';
+
 defineProps({
   profile: {
     type: Object,
@@ -28,6 +30,17 @@ defineProps({
         <strong>{{ profile.school }}</strong>
       </div>
     </div>
+
+    <div class="social-links">
+      <a class="social-btn" :href="profile.social.facebook" target="_blank" rel="noopener noreferrer">
+        <Facebook :size="16" />
+        Facebook
+      </a>
+      <a class="social-btn" :href="profile.social.github" target="_blank" rel="noopener noreferrer">
+        <Github :size="16" />
+        GitHub
+      </a>
+    </div>
   </section>
 </template>
 
@@ -43,12 +56,12 @@ defineProps({
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 0.72rem;
-  color: #d97706;
+  color: #8fa6d4;
 }
 
 .contact-card h3 {
   margin: 0;
-  color: #23160a;
+  color: #e8efff;
 }
 
 .contact-list {
@@ -60,8 +73,8 @@ defineProps({
 .contact-list > div {
   padding: 16px;
   border-radius: 18px;
-  border: 1px solid rgba(255, 178, 37, 0.16);
-  background: rgba(255, 249, 236, 0.94);
+  border: 1px solid rgba(143, 164, 206, 0.24);
+  background: rgba(27, 36, 54, 0.78);
 }
 
 .contact-list span,
@@ -74,7 +87,36 @@ defineProps({
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.74rem;
-  color: #d97706;
+  color: #8fa6d4;
+}
+
+.contact-list strong {
+  color: #d8e4fb;
+}
+
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.social-btn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(106, 241, 230, 0.34);
+  background: linear-gradient(135deg, rgba(0, 201, 167, 0.2), rgba(0, 212, 255, 0.2));
+  color: #dffffb;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28), 0 0 20px rgba(125, 249, 255, 0.22);
 }
 
 @media (max-width: 1080px) {
@@ -83,3 +125,5 @@ defineProps({
   }
 }
 </style>
+
+

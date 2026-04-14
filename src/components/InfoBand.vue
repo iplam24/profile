@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 defineProps({
   profile: {
     type: Object,
@@ -10,8 +10,8 @@ defineProps({
 <template>
   <section class="card info-band">
     <div class="info-band-text">
-      <p class="eyebrow">Rõ ràng hơn</p>
-      <h2>Thông tin cá nhân được tách riêng, dễ nhìn ngay cả khi không chơi game.</h2>
+      <p class="eyebrow">Rõ ràng và dễ đọc</p>
+      <h2>Thông tin cá nhân được tách riêng nên nhìn phát là hiểu, kể cả khi đang chơi game.</h2>
     </div>
 
     <div class="info-stats">
@@ -24,7 +24,7 @@ defineProps({
         <strong>{{ profile.school }}</strong>
       </div>
       <div>
-        <span>Hướng phát triển</span>
+        <span>Hướng học</span>
         <strong>{{ profile.focus }}</strong>
       </div>
     </div>
@@ -38,7 +38,7 @@ defineProps({
   gap: 18px;
   align-items: center;
   padding: 24px;
-  background: linear-gradient(135deg, rgba(255, 226, 141, 0.36), rgba(255, 255, 255, 0.94));
+  background: linear-gradient(135deg, rgba(29, 40, 63, 0.9), rgba(18, 25, 38, 0.92));
 }
 
 .eyebrow {
@@ -46,12 +46,12 @@ defineProps({
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 0.72rem;
-  color: #d97706;
+  color: #8fa6d4;
 }
 
 .info-band h2 {
   margin: 0;
-  color: #23160a;
+  color: #e8efff;
   font-size: 1.5rem;
 }
 
@@ -64,8 +64,8 @@ defineProps({
 .info-stats > div {
   padding: 16px;
   border-radius: 18px;
-  border: 1px solid rgba(255, 178, 37, 0.16);
-  background: rgba(255, 249, 236, 0.94);
+  border: 1px solid rgba(143, 164, 206, 0.24);
+  background: rgba(27, 36, 54, 0.78);
 }
 
 .info-stats span,
@@ -78,7 +78,11 @@ defineProps({
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.74rem;
-  color: #d97706;
+  color: #8fa6d4;
+}
+
+.info-stats strong {
+  color: #d8e4fb;
 }
 
 @media (max-width: 1080px) {
@@ -94,3 +98,5 @@ defineProps({
   }
 }
 </style>
+
+

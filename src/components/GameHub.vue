@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed } from 'vue';
 import StarGame from './games/StarGame.vue';
 import ColorGame from './games/ColorGame.vue';
@@ -107,8 +107,8 @@ const gameComponent = computed(() => {
   gap: 16px;
   padding: 24px;
   background:
-    radial-gradient(circle at top right, rgba(255, 220, 120, 0.38), transparent 28%),
-    rgba(255, 255, 255, 0.94);
+    radial-gradient(circle at top right, rgba(132, 157, 211, 0.18), transparent 30%),
+    linear-gradient(160deg, rgba(26, 33, 48, 0.95), rgba(16, 22, 35, 0.92));
 }
 
 .hero-panel-head {
@@ -123,19 +123,20 @@ const gameComponent = computed(() => {
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 0.72rem;
-  color: #d97706;
+  color: #8fa6d4;
 }
 
 .hero-panel h2 {
   margin: 0;
-  color: #23160a;
+  color: #e8efff;
   font-size: 1.55rem;
 }
 
 .timer-card {
   padding: 12px 14px;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(255, 224, 128, 0.42), rgba(255, 138, 31, 0.12));
+  background: linear-gradient(135deg, rgba(50, 66, 95, 0.82), rgba(29, 40, 63, 0.82));
+  border: 1px solid rgba(143, 164, 206, 0.34);
   text-align: center;
 }
 
@@ -143,7 +144,7 @@ const gameComponent = computed(() => {
 .scoreboard span,
 .mode-hint,
 .game-footer p {
-  color: rgba(35, 22, 10, 0.72);
+  color: rgba(203, 218, 245, 0.8);
 }
 
 .timer-card span,
@@ -156,6 +157,7 @@ const gameComponent = computed(() => {
 .timer-card strong {
   margin-top: 4px;
   font-size: 1.35rem;
+  color: #e8efff;
 }
 
 .mode-hint {
@@ -172,26 +174,27 @@ const gameComponent = computed(() => {
 .scoreboard > div {
   padding: 14px;
   border-radius: 18px;
-  border: 1px solid rgba(255, 178, 37, 0.16);
-  background: rgba(255, 249, 236, 0.94);
+  border: 1px solid rgba(143, 164, 206, 0.24);
+  background: rgba(27, 36, 54, 0.78);
 }
 
 .scoreboard strong {
   margin-top: 6px;
-  color: #23160a;
+  color: #e8efff;
 }
 
 .progress-wrap {
   height: 12px;
   border-radius: 999px;
-  background: rgba(23, 48, 85, 0.08);
+  background: rgba(104, 233, 226, 0.18);
   overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #ff7a18, #ffd166, #fff1b7);
+  background: linear-gradient(90deg, #00b8a9, #00d4ff, #7df9ff);
+  box-shadow: 0 0 18px rgba(125, 249, 255, 0.45);
   transition: width 0.3s ease;
 }
 
@@ -205,9 +208,9 @@ const gameComponent = computed(() => {
   padding: 14px;
   text-align: left;
   border-radius: 18px;
-  border: 1px solid rgba(255, 178, 37, 0.16);
-  background: rgba(255, 249, 236, 0.94);
-  color: #23160a;
+  border: 1px solid rgba(143, 164, 206, 0.22);
+  background: rgba(27, 36, 54, 0.78);
+  color: #dbe7ff;
 }
 
 .switch-chip strong,
@@ -220,8 +223,9 @@ const gameComponent = computed(() => {
 }
 
 .switch-chip.active {
-  background: linear-gradient(135deg, rgba(255, 202, 84, 0.34), rgba(255, 138, 31, 0.16));
-  border-color: rgba(255, 138, 31, 0.28);
+  background: linear-gradient(135deg, rgba(0, 179, 164, 0.4), rgba(0, 130, 186, 0.34));
+  border-color: rgba(125, 249, 255, 0.44);
+  box-shadow: inset 0 1px 0 rgba(194, 255, 249, 0.36), 0 0 20px rgba(0, 212, 255, 0.18);
 }
 
 .game-footer {
@@ -236,8 +240,8 @@ const gameComponent = computed(() => {
   padding: 0 18px;
   border-radius: 999px;
   border: 0;
-  background: rgba(255, 249, 236, 0.96);
-  color: #23160a;
+  background: rgba(33, 43, 65, 0.92);
+  color: #c9d7f0;
   cursor: pointer;
 }
 
@@ -268,3 +272,5 @@ const gameComponent = computed(() => {
   }
 }
 </style>
+
+

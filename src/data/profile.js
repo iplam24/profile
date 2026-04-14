@@ -1,11 +1,22 @@
 export const profile = {
-  name: 'Vũ Xuân Lâm',
+  name: 'Vũ Xuân Lâm ',
   phone: '0332302662',
-  school: 'Học Viện Nông Nghiệp Việt Nam',
+  school: ' Học Viện Nông Nghiệp Việt Nam',
   focus: 'Spring Boot, Vue.js, Flutter',
+  social: {
+    facebook: 'https://www.facebook.com/iam.Iam143/',
+    github: 'https://github.com/iplam24/',
+  },
 };
 
-export const skills = ['Spring Boot', 'Vue.js', 'Flutter', 'JavaScript', 'HTML / CSS', 'UI Motion'];
+export const skills = [
+  { name: 'Spring Boot', icon: 'sprout' },
+  { name: 'Vue.js', icon: 'component' },
+  { name: 'Flutter', icon: 'smartphone' },
+  { name: 'JavaScript', icon: 'file-json' },
+  { name: 'HTML / CSS', icon: 'layout' },
+  { name: 'UI Motion', icon: 'sparkles' },
+];
 
 export const facts = [
   { label: 'Tên', value: profile.name },
@@ -16,18 +27,18 @@ export const facts = [
 
 export const featureCards = [
   {
-    eyebrow: 'Vì sao vui',
+    eyebrow: 'Trải nghiệm',
     title: 'Không chỉ là hồ sơ',
-    text: 'Người xem có thể đổi game, bấm chơi ngay, và cảm nhận trang như một arcade nhỏ.',
+    text: 'Người xem có thể đổi game, bấm chơi ngay và cảm nhận trang như một mini arcade hiện đại.',
   },
   {
-    eyebrow: 'Chất riêng',
-    title: 'Tông xanh dương trẻ trung',
-    text: 'Màu nền, nút bấm, hiệu ứng và các card đều dùng bảng màu xanh để trang nổi bật hơn.',
+    eyebrow: 'Phong cách',
+    title: 'Tông xanh ngọc năng động',
+    text: 'Nền tối, điểm nhấn xanh ngọc và chữ rõ giúp tổng thể nổi bật, trẻ và dễ đọc.',
   },
   {
     eyebrow: 'Kỹ năng',
     title: 'Spring Boot, Vue.js, Flutter',
-    text: 'Phần kỹ năng được đẩy ra rõ ràng để người khác nhìn vào là hiểu hướng học tập ngay.',
+    text: 'Phần kỹ năng được tách rõ để người xem nhìn vào là nắm ngay hướng học tập.',
   },
 ];

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 defineProps({
   bursts: {
     type: Array,
@@ -57,8 +57,8 @@ defineProps({
   transform: translate(-50%, -50%);
   box-shadow:
     0 0 16px rgba(255, 255, 255, 0.95),
-    0 0 30px rgba(255, 162, 40, 0.68),
-    0 0 54px rgba(255, 211, 91, 0.42);
+    0 0 30px rgba(0, 212, 255, 0.68),
+    0 0 54px rgba(125, 249, 255, 0.42);
   animation: coreFlash 1.15s ease-out forwards;
 }
 
@@ -107,3 +107,4 @@ defineProps({
   }
 }
 </style>
+

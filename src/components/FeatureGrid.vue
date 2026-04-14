@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 defineProps({
   features: {
     type: Array,
@@ -9,7 +9,7 @@ defineProps({
 
 <template>
   <section class="grid-three">
-    <article v-for="feature in features" :key="feature.title" class="card feature-card blue-accent">
+    <article v-for="feature in features" :key="feature.title" class="card feature-card luxe-accent">
       <p class="eyebrow">{{ feature.eyebrow }}</p>
       <h3>{{ feature.title }}</h3>
       <p>{{ feature.text }}</p>
@@ -34,12 +34,12 @@ defineProps({
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 0.72rem;
-  color: #d97706;
+  color: #8fa6d4;
 }
 
 .feature-card h3,
 .feature-card p {
-  color: #23160a;
+  color: #d8e4fb;
 }
 
 .feature-card h3 {
@@ -52,10 +52,10 @@ defineProps({
   margin: 0;
 }
 
-.blue-accent {
+.luxe-accent {
   background:
-    radial-gradient(circle at top right, rgba(255, 213, 98, 0.3), transparent 24%),
-    rgba(255, 255, 255, 0.94);
+    radial-gradient(circle at top right, rgba(132, 157, 211, 0.16), transparent 30%),
+    linear-gradient(155deg, rgba(27, 36, 54, 0.92), rgba(17, 23, 35, 0.92));
 }
 
 @media (max-width: 1080px) {
@@ -64,3 +64,5 @@ defineProps({
   }
 }
 </style>
+
+

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, onMounted } from 'vue';
 import AppHeader from './components/AppHeader.vue';
 import ProfilePanel from './components/ProfilePanel.vue';
@@ -8,6 +8,7 @@ import FeatureGrid from './components/FeatureGrid.vue';
 import ContactPanel from './components/ContactPanel.vue';
 import MusicControl from './components/MusicControl.vue';
 import CelebrationLayer from './components/CelebrationLayer.vue';
+import FooterBar from './components/FooterBar.vue';
 import { facts, featureCards, profile, skills } from './data/profile';
 import { useArcadeGames } from './composables/useArcadeGames';
 
@@ -28,6 +29,13 @@ onMounted(() => {
 
     <AppHeader :profile="profile" :mode-name="modeName" />
 
+    <section class="run-line card" aria-label="Thong bao chay">
+      <div class="run-track">
+        <span>Chào mừng bạn đến với trang thông tin và mini game của Vũ Xuân Lâm</span>
+        <span>Chào mừng bạn đến với trang thông tin và mini game của Vũ Xuân Lâm</span>
+      </div>
+    </section>
+
     <section class="hero-grid">
       <ProfilePanel :profile="profile" :facts="facts" :skills="skills">
         <template #actions>
@@ -36,15 +44,18 @@ onMounted(() => {
         </template>
       </ProfilePanel>
 
-      <GameHub :arcade="arcade" />
+      <MusicControl />
     </section>
 
-    <MusicControl />
+    <GameHub :arcade="arcade" />
 
     <InfoBand :profile="profile" />
 
     <FeatureGrid :features="featureCards" />
 
     <ContactPanel :profile="profile" />
+
+    <FooterBar :profile="profile" />
   </main>
 </template>
+

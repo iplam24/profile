@@ -1,7 +1,10 @@
 import { computed, reactive, ref } from 'vue';
 
-const fireworksPalette = ['#ff7a18', '#ffd166', '#fff1b7', '#ffb347', '#ff5d2a', '#ffffff'];
-const starSymbols = ['✦', '✧', '★', '✹', '✺'];
+const fireworksPalette = ['#7ea6ff', '#8fe3ff', '#d5e1ff', '#9ab7ff', '#75d1ff', '#ffffff'];
+const royalPalette = ['#31415f', '#4a5f88', '#6b82b2', '#93abd6', '#b8c7e6', '#dbe5f7'];
+const colorNames = ['Xanh đêm', 'Xanh thép', 'Xanh đá', 'Xanh dịu', 'Xanh bạc', 'Xanh băng'];
+const starSymbols = ['*', '+', 'x', 'o', '@'];
+
 const storageKeys = {
   starHigh: 'vxl-star-high-score',
   colorHigh: 'vxl-color-high-score',
@@ -43,7 +46,7 @@ export function useArcadeGames() {
     timeLeft: 20,
     running: false,
     ended: false,
-    status: 'Bấm chơi để chờ tín hiệu xanh.',
+    status: 'Nhấn chơi và chờ tín hiệu xanh.',
     ready: false,
     waitStart: 0,
     bestMs: null,
@@ -51,9 +54,9 @@ export function useArcadeGames() {
   });
 
   const games = [
-    { id: 'stars', name: 'Bắt Sao', hint: 'Bấm sao bay để cộng điểm nhanh.' },
-    { id: 'colors', name: 'Săn Màu', hint: 'Chọn đúng ô màu được yêu cầu.' },
-    { id: 'reaction', name: 'Phản Xạ', hint: 'Bấm ngay khi đèn xanh bật lên.' },
+    { id: 'stars', name: 'Bắt Sao', hint: 'Bấm sao đang di chuyển để cộng điểm nhanh.' },
+    { id: 'colors', name: 'Săn Màu', hint: 'Chọn đúng ô màu mà game yêu cầu.' },
+    { id: 'reaction', name: 'Phản Xạ', hint: 'Bấm thật nhanh khi tín hiệu bật sẵn sàng.' },
   ];
 
   const modeInfo = computed(() => games.find((game) => game.id === activeGame.value));
@@ -88,8 +91,8 @@ export function useArcadeGames() {
 
   const starStreakLabel = computed(() => {
     if (starState.combo >= 8) return 'Bùng nổ';
-    if (starState.combo >= 4) return 'Rất ổn';
-    if (starState.combo >= 1) return 'Đang vào tay';
+    if (starState.combo >= 4) return 'Rất tốt';
+    if (starState.combo >= 1) return 'Đang có chuỗi';
     return 'Khởi động';
   });
 
@@ -98,7 +101,7 @@ export function useArcadeGames() {
     if (reactionState.bestMs < 220) return 'Siêu nhanh';
     if (reactionState.bestMs < 320) return 'Rất nhanh';
     if (reactionState.bestMs < 450) return 'Ổn áp';
-    return 'Cần tập thêm';
+    return 'Cần luyện thêm';
   });
 
   let starSpawnTimer = null;
@@ -121,21 +124,17 @@ export function useArcadeGames() {
       y: randomBetween(12, 72),
       hue: fireworksPalette[Math.floor(Math.random() * fireworksPalette.length)],
       delay: randomBetween(0, 0.25),
-      particles: Array.from({ length: 20 }, (_, index) => ({
-        id: `${celebrationSeed}-${index}`,
-        angle: (() => {
-          const angle = randomBetween(0, 360);
-          const distance = randomBetween(72, 160);
-          return {
-            angle,
-            distance,
-            offsetX: `${Math.cos((Math.PI / 180) * angle) * distance}px`,
-            offsetY: `${Math.sin((Math.PI / 180) * angle) * distance}px`,
-          };
-        })(),
-        size: randomBetween(6, 12),
-        color: fireworksPalette[(index + celebrationSeed) % fireworksPalette.length],
-      })),
+      particles: Array.from({ length: 20 }, (_, index) => {
+        const angle = randomBetween(0, 360);
+        const distance = randomBetween(72, 160);
+        return {
+          id: `${celebrationSeed}-${index}`,
+          offsetX: `${Math.cos((Math.PI / 180) * angle) * distance}px`,
+          offsetY: `${Math.sin((Math.PI / 180) * angle) * distance}px`,
+          size: randomBetween(6, 12),
+          color: fireworksPalette[(index + celebrationSeed) % fireworksPalette.length],
+        };
+      }),
     }));
 
     celebrations.value = [...celebrations.value, ...bursts];
@@ -212,7 +211,7 @@ export function useArcadeGames() {
     starState.timeLeft = 25;
     starState.running = false;
     starState.ended = false;
-    starState.status = 'Nhấn “Chơi” để bắt đầu.';
+    starState.status = 'Nhấn Chơi để bắt đầu.';
     starState.stars = [];
   }
 
@@ -239,7 +238,7 @@ export function useArcadeGames() {
       if (!exists || !starState.running) return;
       starState.stars = starState.stars.filter((item) => item.id !== id);
       starState.combo = 0;
-      starState.status = 'Bắt hụt rồi, sao bay mất!';
+      starState.status = 'Trượt rồi, sao đã bay mất.';
     }, randomBetween(1300, 2000));
   }
 
@@ -275,7 +274,7 @@ export function useArcadeGames() {
     const bonus = Math.min(starState.combo, 4);
     starState.score += star.reward + bonus;
     starState.combo += 1;
-    starState.status = star.reward > 1 ? `Sao đặc biệt +${star.reward + bonus}` : `Chuẩn rồi +${star.reward + bonus}`;
+    starState.status = star.reward > 1 ? `Sao đặc biệt +${star.reward + bonus}` : `Đẹp đó +${star.reward + bonus}`;
     saveStarHighScore();
     triggerFireworks(star.reward > 1 ? 3 : 2);
   }
@@ -289,17 +288,15 @@ export function useArcadeGames() {
     starCountdownTimer = null;
     starState.stars = [];
     starState.combo = 0;
-    starState.status = 'Hết giờ bắt sao. Thử lại để vượt kỷ lục.';
+    starState.status = 'Hết giờ. Chơi lại để phá kỷ lục mới.';
     saveStarHighScore();
     triggerFireworks(4);
   }
 
-  const colorNames = ['Xanh Dương', 'Xanh Da Trời', 'Xanh Biển', 'Xanh Navy', 'Xanh Ngọc', 'Xanh Cyan'];
-
   function buildColorBoard() {
-    const targetIndex = Math.floor(Math.random() * bluePalette.length);
+    const targetIndex = Math.floor(Math.random() * royalPalette.length);
     colorState.target = colorNames[targetIndex];
-    colorState.board = bluePalette
+    colorState.board = royalPalette
       .map((color, index) => ({
         id: `${++colorSeed}-${index}`,
         color,
@@ -318,7 +315,7 @@ export function useArcadeGames() {
     colorState.timeLeft = 20;
     colorState.running = false;
     colorState.ended = false;
-    colorState.status = 'Nhấn “Chơi” để mở bảng màu.';
+    colorState.status = 'Nhấn Chơi để mở bảng màu.';
     colorState.target = '';
     colorState.board = [];
   }
@@ -326,7 +323,7 @@ export function useArcadeGames() {
   function startColorGame() {
     resetColorGame();
     colorState.running = true;
-    colorState.status = 'Chọn đúng ô màu xanh được yêu cầu.';
+    colorState.status = 'Chọn đúng ô màu được yêu cầu.';
     buildColorBoard();
     triggerFireworks(2);
 
@@ -346,11 +343,11 @@ export function useArcadeGames() {
     colorState.round += 1;
     if (tile.isTarget) {
       colorState.score += 2;
-      colorState.status = `Đúng rồi, +2 điểm cho ${tile.label}.`;
+      colorState.status = `Chính xác +2 (${tile.label})`;
       triggerFireworks(2);
     } else {
       colorState.lives -= 1;
-      colorState.status = `Sai màu rồi, còn ${colorState.lives} mạng.`;
+      colorState.status = `Sai rồi. Còn ${colorState.lives} mạng.`;
     }
 
     if (colorState.lives <= 0) {
@@ -367,7 +364,7 @@ export function useArcadeGames() {
     colorState.ended = true;
     clearTimer(colorCountdownTimer);
     colorCountdownTimer = null;
-    colorState.status = 'Hết lượt của game màu. Chơi lại để nâng điểm.';
+    colorState.status = 'Hết lượt game màu. Chơi lại để tăng điểm.';
     saveColorHighScore();
     triggerFireworks(3);
   }
@@ -381,7 +378,7 @@ export function useArcadeGames() {
     reactionState.timeLeft = 20;
     reactionState.running = false;
     reactionState.ended = false;
-    reactionState.status = 'Bấm “Chơi” để chờ tín hiệu xanh.';
+    reactionState.status = 'Nhấn Chơi và chờ tín hiệu.';
     reactionState.ready = false;
     reactionState.waitStart = 0;
     reactionState.attempts = 0;
@@ -400,7 +397,7 @@ export function useArcadeGames() {
   function startReactionGame() {
     resetReactionGame();
     reactionState.running = true;
-    reactionState.status = 'Đợi tới khi khối xanh bật sáng rồi bấm ngay.';
+    reactionState.status = 'Đợi tín hiệu xanh rồi bấm ngay.';
     triggerFireworks(2);
 
     reactionCountdownTimer = window.setInterval(() => {
@@ -419,60 +416,61 @@ export function useArcadeGames() {
     if (!reactionState.running) return;
 
     if (!reactionState.ready) {
-      reactionState.status = 'Bấm sớm quá rồi, tập trung chút nữa.';
+      reactionState.status = 'Bấm sớm quá. Chờ tín hiệu đã.';
       reactionState.score = Math.max(0, reactionState.score - 1);
+      scheduleReactionSignal();
       return;
     }
 
-    const reactionMs = Math.max(0, Math.round(performance.now() - reactionState.waitStart));
-    saveReactionHighScore(reactionMs);
-    reactionState.status = `Phản xạ ${reactionMs}ms - quá ổn!`;
-    reactionState.ready = false;
+    const reactionMs = Math.max(1, Math.round(performance.now() - reactionState.waitStart));
     reactionState.attempts += 1;
-    triggerFireworks(3);
-
-    if (reactionState.timeLeft > 0) {
-      scheduleReactionSignal();
-    }
+    reactionState.ready = false;
+    reactionState.status = `Phản xạ ${reactionMs}ms. Rất tốt!`;
+    saveReactionHighScore(reactionMs);
+    triggerFireworks(reactionMs < 280 ? 3 : 2);
+    scheduleReactionSignal();
   }
 
   function endReactionGame() {
     reactionState.running = false;
     reactionState.ended = true;
+    reactionState.ready = false;
     clearTimer(reactionCountdownTimer);
     clearTimer(reactionTimeoutTimer);
     reactionCountdownTimer = null;
     reactionTimeoutTimer = null;
-    reactionState.ready = false;
-    reactionState.status = 'Hết giờ phản xạ. Chơi lại nếu muốn nhanh hơn.';
+    reactionState.status = 'Hết giờ phản xạ. Chơi lại để cải thiện tốc độ.';
+    window.localStorage.setItem(storageKeys.reactionHigh, String(reactionState.highScore));
     triggerFireworks(3);
   }
 
   function activateGame(gameId) {
-    activeGame.value = gameId;
+    if (!games.some((game) => game.id === gameId)) return;
     clearAllTimers();
 
     if (gameId === 'stars') resetStarGame();
     if (gameId === 'colors') resetColorGame();
     if (gameId === 'reaction') resetReactionGame();
+
+    activeGame.value = gameId;
   }
 
   return {
-    activeGame,
-    celebrations,
     games,
+    activeGame,
     modeInfo,
-    currentHighScore,
     currentScore,
+    currentHighScore,
     currentTime,
     currentStatus,
     currentProgress,
-    starStreakLabel,
-    reactionLabel,
     starState,
     colorState,
     reactionState,
-    readStoredScores,
+    starStreakLabel,
+    reactionLabel,
+    celebrations,
+    triggerFireworks,
     activateGame,
     startStarGame,
     hitStar,
@@ -480,7 +478,6 @@ export function useArcadeGames() {
     pickColor,
     startReactionGame,
     tapReaction,
-    triggerFireworks,
-    clearAllTimers,
+    readStoredScores,
   };
 }
