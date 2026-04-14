@@ -33,28 +33,20 @@ let analyser = null;
 let sourceNode = null;
 let animationFrameId = null;
 
-const appBase = import.meta.env.BASE_URL || '/';
-const musicBase = `${appBase.endsWith('/') ? appBase : `${appBase}/`}music/`;
+const trackModules = import.meta.glob('../assets/music/*.mp3', { eager: true });
 
-function toMusicUrl(fileName) {
-  return `${musicBase}${encodeURIComponent(fileName)}`;
-}
+const tracks = Object.entries(trackModules)
+  .map(([path, moduleData]) => {
+    const fileName = path.split('/').pop() ?? 'track.mp3';
+    const src = typeof moduleData === 'string' ? moduleData : moduleData.default;
+    if (!src) return null;
 
-const musicFileNames = [
-  '[Vietsub + Pinyin] Buông Bỏ Sự Phụ Thuộc Nơi Anh - Vương Diễm Vi - 离开我的依赖 - 王艳薇 Evangeline.mp3',
-  'Giày cao gót màu đỏ 红色高跟鞋 - Học tiếng Trung qua bài hát - Vietsub - Phiên âm - Từ mới.mp3',
-  'Jumping Machine (跳楼机) (1.1x).mp3',
-  'Justin Bieber - Baby ft. Ludacris.mp3',
-  'Like Sunny Days, Like Rainy Days 像晴天像雨天 (電視劇難哄The First Frost心動曲) - 汪蘇瀧Silence.W.mp3',
-  '[Vietsub + Pinyin] Tri Ngã (Hiểu Ta) - Nga Lâu __ 知我 - 哦漏 (OST Kiếm Lai).mp3',
-  '[Vietsub] Đông Miên - 2023 - A Nguyệt Nguyệt, Lưu Triệu Vũ - 冬眠 - 2023 - 阿YueYue, 刘兆宇.mp3',
-];
-
-const tracks = musicFileNames
-  .map((fileName) => ({
-    name: fileName.replace(/\.mp3$/i, '').replace(/\[[^\]]+\]/g, '').replace(/[-_]/g, ' ').trim(),
-    src: toMusicUrl(fileName),
-  }))
+    return {
+      name: fileName.replace(/\.mp3$/i, '').replace(/\[[^\]]+\]/g, '').replace(/[-_]/g, ' ').trim(),
+      src,
+    };
+  })
+  .filter(Boolean)
   .sort((a, b) => a.name.localeCompare(b.name, 'vi'));
 
 const hasTracks = computed(() => tracks.length > 0);
