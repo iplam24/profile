@@ -2,7 +2,7 @@ import axios from 'axios';
 import { computed, ref } from 'vue';
 
 const API_HOST = 'https://daotao.vnua.edu.vn';
-const BASE_URL = '/vnua-api';
+const BASE_URL = import.meta.env.VITE_VNUA_API_BASE || '/vnua-api';
 
 const ENDPOINTS = {
   login: '/api/auth/login',
@@ -85,7 +85,7 @@ export function useVnuaSchoolApi() {
   const grades = ref([]);
   const exams = ref([]);
   const lastStatus = ref('');
-  const activeBaseUrl = ref(API_HOST);
+  const activeBaseUrl = ref(BASE_URL === '/vnua-api' ? API_HOST : BASE_URL);
 
   const isLoggedIn = computed(() => Boolean(token.value));
 
@@ -230,6 +230,11 @@ export function useVnuaSchoolApi() {
       const tokenValue = pickAccessToken(payload);
 
       if (!isOk(response) || !tokenValue) {
+        if ([403, 451].includes(response?.status)) {
+          setError('Endpoint đăng nhập bị chặn theo IP/vùng mạng. Hãy dùng relay/proxy đặt tại VN và cấu hình VITE_VNUA_API_BASE.');
+          lastStatus.value = `login:blocked:${response.status}`;
+          return false;
+        }
         const reason = pickApiMessage(payload);
         const suffix = reason ? ` (${reason})` : '';
         setError(`Đăng nhập thất bại. Kiểm tra lại tài khoản hoặc mật khẩu.${suffix}`);
@@ -246,7 +251,7 @@ export function useVnuaSchoolApi() {
         lastStatus.value = 'login:timeout';
         return false;
       }
-      setError('Không kết nối được VNUA. Hãy chạy app bằng npm run dev hoặc npm run start để /vnua-api proxy hoạt động.');
+      setError('Không kết nối được VNUA. Nếu server ở Singapore bị chặn, hãy đặt relay/proxy tại VN và cấu hình VITE_VNUA_API_BASE.');
       lastStatus.value = 'login:network-error';
       return false;
     } finally {
@@ -373,8 +378,18 @@ export function useVnuaSchoolApi() {
     terms.value = [];
     selectedTerm.value = '';
     schedule.value = [];
+    scheduleMeta.value = {};
     grades.value = [];
     exams.value = [];
+    clearError();
+  }
+
+  function logoutAll() {
+    logoutStudent();
+    username.value = '';
+    password.value = '';
+    rememberCredential.value = false;
+    window.localStorage.removeItem(STORAGE_KEYS.credentials);
   }
 
   return {
@@ -395,6 +410,7 @@ export function useVnuaSchoolApi() {
     loadCredentials,
     loginStudent,
     logoutStudent,
+    logoutAll,
     loadTerms,
     loadSchedule,
     loadGrades,
